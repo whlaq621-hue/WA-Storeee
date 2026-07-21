@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر فخم | WA-Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- المتغيرات والأساسيات --- */
+        :root {
+            --primary-color: #1a1a1a; /* أسود فخم */
+            --accent-color: #d4af37; /* ذهبي */
+            --text-dark: #333;
+            --text-light: #fff;
+            --bg-light: #f9f9f9;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            padding-top: 80px; /* مساحة للهيدر الثابت */
+        }
+
+        /* --- الهيدر (القائمة العلوية) --- */
+        header {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 20px 50px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        header h1 {
+            font-size: 24px;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .cart-icon-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            font-size: 12px;
+            font-weight: bold;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- المحتوى الرئيسي --- */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-color);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* --- شبكة المنتجات --- */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .product-image-container {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .product-image-container i {
+            font-size: 50px;
+            color: #ccc;
+        }
+
+        .product-card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+
+        .product-card p {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .add-to-cart-btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+        }
+
+        /* --- السلة الجانبية (Sidebar) --- */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -350px; /* مخفية خارج الشاشة */
+            width: 350px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+            z-index: 1100;
+            transition: right 0.4s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .cart-sidebar.active {
+            right: 0; /* ظاهرة */
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .cart-header h2 {
+            font-size: 22px;
+            color: var(--primary-color);
+        }
+
+        .close-cart-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .cart-items {
+            list-style: none;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-img {
+            width: 50px;
+            height: 50px;
+            background-color: #eee;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cart-item-img i {
+            color: #999;
+        }
+
+        .cart-item-details h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .remove-item-btn {
+            background: none;
+            border: none;
+            color: #ff4d4d;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .cart-footer-sidebar {
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .checkout-btn-sidebar {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .checkout-btn-sidebar:hover {
+            background-color: #bf9c31;
+        }
+
+        /* --- تراكب الخلفية عند فتح السلة --- */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1050;
+            display: none; /* مخفي افتراضياً */
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* --- Responsive Design (موبايل) --- */
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            .section-title { font-size: 28px; }
+            .products-grid { grid-template-columns: 1fr; }
+            .cart-sidebar { width: 90%; right: -90%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر -->
+    <header>
+        <h1>WA-Store</h1>
+        <div class="header-right">
+            <button class="cart-icon-btn" onclick="toggleCart()">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cartCount" class="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="container">
+        <h2 class="section-title">أحدث المنتجات</h2>
+        
+        <div class="products-grid">
+            <!-- منتج 1 -->
+            <div class="product-card">
+                <div>
+                    <div class="product-image-container">
+                        <i class="fas fa-gem"></i> <!-- أيقونة بدلاً من الصورة -->
+                    </div>
+                    <h3>ساعة ألماس فاخرة</h3>
+                    <p>ساعة يد نسائية مرصعة بالألماس الأصلي، تصميم أنيق وجذاب.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="product-price">٥٠٠٠ ر.س</span>
+                    <button class="add-to-cart-btn" onclick="addToCart('ساعة ألماس فاخرة', 5000)">
+                        <i class="fas fa-plus"></i> إضافة
+                    </button>
+                </div>
+            </div>
+
+            <!-- منتج 2 -->
+            <div class="product-card">
+                <div>
+                    <div class="product-image-container">
+                        <i class="fas fa-headphones-alt"></i>
+                    </div>
+                    <h3>سماعات احترافية</h3>
+                    <p>سماعات رأس لاسلكية بخاصية عزل الضوضاء وصوت محيطي نقي.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="product-price">١٢٠٠ ر.س</span>
+                    <button class="add-to-cart-btn" onclick="addToCart('سماعات احترافية', 1200)">
+                        <i class="fas fa-plus"></i> إضافة
+                    </button>
+                </div>
+            </div>
+
+            <!-- منتج 3 -->
+            <div class="product-card">
+                <div>
+                    <div class="product-image-container">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3>لابتوب ألترا سليم</h3>
+                    <p>خفيف الوزن وقوي الأداء، مثالي لرجال الأعمال والمصممين.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="product-price">٤٥٠٠ ر.س</span>
+                    <button class="add-to-cart-btn" onclick="addToCart('لابتوب ألترا سليم', 4500)">
+                        <i class="fas fa-plus"></i> إضافة
+                    </button>
+                </div>
+            </div>
+            
+            <!-- منتج 4 -->
+            <div class="product-card">
+                <div>
+                    <div class="product-image-container">
+                        <i class="fas fa-shoe-prints"></i>
+                    </div>
+                    <h3>حذاء رياضي</h3>
+                    <p>حذاء مريح للجري والمشي اليومي، تصميم عصري وخفيف.</p>
+                </div>
+                <div class="card-footer">
+                    <span class="product-price">٣٥٠ ر.س</span>
+                    <button class="add-to-cart-btn" onclick="addToCart('حذاء رياضي', 350)">
+                        <i class="fas fa-plus"></i> إضافة
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- السلة الجانبية -->
+    <div id="overlay" class="overlay" onclick="toggleCart()"></div>
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h2>سلة التسوق</h2>
+            <button class="close-cart-btn" onclick="toggleCart()">&times;</button>
+        </div>
+        <ul id="cartItems" class="cart-items">
+            <!-- العناصر ستضاف هنا بواسطة الجافاسكريبت -->
+            <li style="text-align: center; color: #999; margin-top: 20px;">السلة فارغة</li>
+        </ul>
+        <div class="cart-footer-sidebar">
+            <div class="cart-total">
+                <span>المجموع:</span>
+                <span id="cartTotal">٠ ر.س</span>
+            </div>
+            <button class="checkout-btn-sidebar" onclick="checkout()">إتمام الطلب</button>
+        </div>
+    </div>
+
+    <!-- جافاسكريبت للتحكم بالسلة -->
+    <script>
+        let cart = [];
+        let total = 0;
+
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
